@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  File created - Tuesday-February-27-2018   
+--  File created - Wednesday-February-28-2018   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Trigger TRIG_AUDIT_TRAIL_LOGGER
@@ -11,8 +11,8 @@
   action_type CHAR(1);
   event   VARCHAR2(255) := 'Standard Event';
   max_sal NUMBER;
-  --Set the variables up.
   
+  --Set the variables up.  
   BEFORE STATEMENT
   IS
   BEGIN
@@ -21,7 +21,6 @@
     ELSIF UPDATING THEN
       action_type := 'U';
       SELECT MAX(actual_salary) INTO max_sal FROM lds_placement;
-      DBMS_OUTPUT.put_line(max_sal);
     END IF;
   END BEFORE STATEMENT;
   
@@ -33,9 +32,9 @@
       event   := 'New Highest Salary: ' || :NEW.actual_salary;
     END IF;
   END BEFORE EACH ROW;
-  
-  
-  AFTER EACH ROW
+
+  --Audit the trigger state.
+  AFTER STATEMENT
   IS
   BEGIN
     INSERT
@@ -55,7 +54,7 @@
         USER,
         event
       );
-  END AFTER EACH ROW;
+  END AFTER STATEMENT;
 END;
 /
 ALTER TRIGGER "C3444086"."TRIG_AUDIT_TRAIL_LOGGER" ENABLE;
